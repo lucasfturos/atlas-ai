@@ -1,98 +1,140 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Atlas AI
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Atlas AI é uma API backend em NestJS que fornece uma camada unificada para integração com diferentes provedores de Inteligência Artificial por meio de uma interface comum..
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+O projeto abstrai detalhes específicos de cada provider (como Gemini, OpenAI, etc.), permitindo que aplicações consumam IA por meio de uma interface consistente, extensível e fácil de manter.
 
-## Description
+## Principais características
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- Arquitetura baseada em providers (Strategy Pattern)
+- Integração com Google Gemini via SDK oficial
+- Estrutura preparada para múltiplos provedores de IA
+- Validação de entrada com DTOs
+- Limites de uso para evitar abuso de APIs gratuitas
+- Tratamento explícito de erros de domínio
+- Endpoint HTTP simples para chat
+- Endpoint HTML básico para testes manuais
 
-## Project setup
+## Objetivo do projeto
 
-```bash
-$ npm install
+O Atlas AI não é apenas um wrapper de API.
+Ele funciona como uma camada de orquestração de IA, separando claramente:
+
+- Controllers: camada HTTP
+- Services: regras de negócio e fluxo
+- Providers: integração com SDKs externos
+
+Essa separação permite que o projeto evolua facilmente para suportar:
+
+- múltiplos modelos
+- múltiplos provedores
+- agentes com regras próprias
+- políticas de uso e limites personalizados
+- fallback entre providers
+
+## Tecnologias utilizadas
+
+- Node.js
+- NestJS
+- TypeScript
+- Google Gemini SDK (@google/genai)
+
+## Instalação
+
+1. Clonar o repositório
+
+```
+git clone https://github.com/seu-usuario/atlas-ai.git
+cd atlas-ai
 ```
 
-## Compile and run the project
+2. Instalar dependências
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```
+npm install
 ```
 
-## Run tests
+3. Configurar variáveis de ambiente
 
-```bash
-# unit tests
-$ npm run test
+Criar um arquivo .env na raiz do projeto com o seguinte conteúdo:
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```
+GEMINI_API_KEY=your_api_key_here
+PORT=3000
 ```
 
-## Deployment
+## Executar o projeto
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Modo desenvolvimento:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+```
+npm run start:dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Modo produção:
 
-## Resources
+```
+npm run build
+npm run start:prod
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+## Endpoint do chat (API)
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+`POST /v1/chat`
 
-## Support
+Request:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```
+{
+  "provider": "gemini",
+  "model": "gemini-3-flash-preview",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Explique o que é IA em poucas palavras"
+    }
+  ]
+}
+```
 
-## Stay in touch
+Response:
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```
+{
+  "provider": "gemini",
+  "model": "gemini-3-flash-preview",
+  "message": {
+    "role": "assistant",
+    "content": "Inteligência Artificial é a capacidade de máquinas aprenderem e tomarem decisões simulando a inteligência humana."
+  }
+}
+```
 
-## License
+## Endpoint de teste (HTML)
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+`GET /v1/chat/test`
+
+Esse endpoint:
+
+- exibe um formulário HTML simples
+- envia a pergunta para a API
+- mostra a resposta da IA diretamente na página
+- exibe mensagens de erro amigáveis (ex: API key ausente)
+
+## Provedores suportados
+
+Atualmente:
+
+- Google Gemini
+
+Planejado:
+
+- OpenAI
+- Claude
+- Outros LLMs compatíveis e gratuitos
+
+Adicionar um novo provider exige apenas:
+
+1. Criar um novo provider em src/ai/providers
+2. Implementar a interface AIProvider
+3. Registrar no ChatService
