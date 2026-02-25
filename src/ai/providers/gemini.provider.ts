@@ -1,6 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 import { AIProvider } from './ai-provider.interface';
-import { ChatMessage } from '../../chat/dto/chat.dto';
+import { ChatMessage } from 'src/chat/dto/chat.dto';
 import { AIConfigError, AIError, AIProviderError } from '../errors/ai.error';
 
 export class GeminiProvider implements AIProvider {

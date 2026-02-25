@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ChatModule } from './chat/chat.module';
+import { ChatModule } from './chat/module/chat.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({

@@ -8,15 +8,15 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import type { Response } from 'express';
-import { ChatService } from './chat.service';
-import { ChatRequestDto } from './dto/chat.dto';
+import { ChatService } from '../service/chat.service';
+import { ChatRequestDto } from '../dto/chat.dto';
 import {
   AIConfigError,
   AIProviderError,
   AIUnsupportedProviderError,
   AIInvalidModelError,
   AIPromptTooLargeError,
-} from '../ai/errors/ai.error';
+} from 'src/ai/errors/ai.error';
 
 @Controller('v1/chat')
 export class ChatController {

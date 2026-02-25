@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ChatRequestDto } from './dto/chat.dto';
-import { AIProvider } from '../ai/providers/ai-provider.interface';
-import { GeminiProvider } from '../ai/providers/gemini.provider';
+import { ChatRequestDto } from '../dto/chat.dto';
+import { AIProvider } from 'src/ai/providers/ai-provider.interface';
 import {
   AIError,
   AIUnsupportedProviderError,
@@ -9,21 +8,18 @@ import {
   AIInvalidModelError,
 } from 'src/ai/errors/ai.error';
 import { ALLOWED_MODELS } from 'src/ai/models/allowed-models';
-import { ChatMessage } from './dto/chat.dto';
+import { ChatMessage } from '../dto/chat.dto';
+import { checkRateLimit } from 'src/ai/limits/rate-limits';
 
 const MAX_CHARS = 4000;
 
 @Injectable()
 export class ChatService {
-  private providers: Record<string, AIProvider>;
-
-  constructor() {
-    this.providers = {
-      gemini: new GeminiProvider(),
-    };
-  }
+  constructor(private readonly providers: Record<string, AIProvider>) {}
 
   async generateResponse(data: ChatRequestDto): Promise<string> {
+    checkRateLimit('global');
+
     const { provider, model, messages } = data;
 
     const aiProvider = this.getProvider(provider);
