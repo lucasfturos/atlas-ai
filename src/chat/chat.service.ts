@@ -1,16 +1,36 @@
 import { Injectable } from '@nestjs/common';
 import { ChatRequestDto } from './dto/chat.dto';
-import { generateGeminiResponse } from '../ai/providers/gemini.provider';
+import { AIProvider } from '../ai/providers/ai-provider.interface';
+import { GeminiProvider } from '../ai/providers/gemini.provider';
+import { AIError, AIUnsupportedProviderError } from 'src/ai/errors/ai.error';
 
 @Injectable()
 export class ChatService {
-  async generateResponse(data: ChatRequestDto) {
-    const { provider, model, messages } = data;
+  private providers: Record<string, AIProvider>;
 
-    if (provider === 'gemini') {
-      return generateGeminiResponse(model, messages);
+  constructor() {
+    this.providers = {
+      gemini: new GeminiProvider(),
+    };
+  }
+
+  async generateResponse(data: ChatRequestDto): Promise<string> {
+    const provider = this.providers[data.provider];
+
+    if (!provider) {
+      throw new AIUnsupportedProviderError(
+        `Provider not supported: ${data.provider}`,
+      );
     }
 
-    throw new Error('Provider não suportado');
+    try {
+      return await provider.generate(data.model, data.messages);
+    } catch (err) {
+      if (err instanceof AIError) {
+        throw err;
+      }
+
+      throw err;
+    }
   }
 }
