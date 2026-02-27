@@ -1,5 +1,6 @@
-import { IsIn, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
+import { IsIn, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import { AIProviderName } from 'src/ai/providers/enum/ai-provider.enum';
 
 export type ChatMessage = {
   role: 'system' | 'user' | 'assistant';
@@ -16,8 +17,8 @@ export class ChatMessageDto {
 }
 
 export class ChatRequestDto {
-  @IsIn(['gemini'])
-  provider: 'gemini';
+  @IsIn(Object.values(AIProviderName))
+  provider: AIProviderName;
 
   @IsString()
   @IsNotEmpty()

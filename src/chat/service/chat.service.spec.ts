@@ -1,12 +1,14 @@
-import { ChatService } from './chat.service';
-import { ChatRequestDto } from '../dto/chat.dto';
 import {
-  AIUnsupportedProviderError,
   AIInvalidModelError,
   AIPromptTooLargeError,
+  AIUnsupportedProviderError,
 } from 'src/ai/errors/ai.error';
-import { AIProvider } from 'src/ai/providers/ai-provider.interface';
 import { checkRateLimit } from 'src/ai/limits/rate-limits';
+import { AIProviderName } from 'src/ai/providers/enum/ai-provider.enum';
+import { AIProvider } from 'src/ai/providers/interface/ai-provider.interface';
+
+import { ChatRequestDto } from '../dto/chat.dto';
+import { ChatService } from './chat.service';
 
 jest.mock('src/ai/limits/rate-limits', () => ({
   checkRateLimit: jest.fn(),
@@ -25,12 +27,12 @@ describe('ChatService', () => {
     mockedCheckRateLimit.mockClear();
     mockedCheckRateLimit.mockImplementation(() => {});
 
-    service = new ChatService({ gemini: providerMock });
+    service = new ChatService({ [AIProviderName.GEMINI]: providerMock });
   });
 
   it('should throw if provider is not supported', async () => {
     const request = {
-      provider: 'invalid',
+      provider: 'invalid' as AIProviderName,
       model: 'any',
       messages: [{ role: 'user', content: 'test' }],
     } as unknown as ChatRequestDto;
@@ -42,7 +44,7 @@ describe('ChatService', () => {
 
   it('should throw if model is not allowed', async () => {
     const request = {
-      provider: 'gemini',
+      provider: AIProviderName.GEMINI,
       model: 'invalid-model',
       messages: [{ role: 'user', content: 'test' }],
     } as ChatRequestDto;
@@ -54,7 +56,7 @@ describe('ChatService', () => {
 
   it('should throw if prompt exceeds max size', async () => {
     const request = {
-      provider: 'gemini',
+      provider: AIProviderName.GEMINI,
       model: 'gemini-3-flash-preview',
       messages: [{ role: 'user', content: 'a'.repeat(5000) }],
     } as ChatRequestDto;
@@ -70,7 +72,7 @@ describe('ChatService', () => {
     });
 
     const request = {
-      provider: 'gemini',
+      provider: AIProviderName.GEMINI,
       model: 'gemini-3-flash-preview',
       messages: [{ role: 'user', content: 'test' }],
     } as ChatRequestDto;
@@ -88,11 +90,11 @@ describe('ChatService', () => {
     };
 
     service = new ChatService({
-      gemini: providerMock,
+      [AIProviderName.GEMINI]: providerMock,
     });
 
     const request = {
-      provider: 'gemini',
+      provider: AIProviderName.GEMINI,
       model: 'gemini-3-flash-preview',
       messages: [{ role: 'user', content: 'hello' }],
     } as ChatRequestDto;

@@ -1,21 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { ChatRequestDto } from '../dto/chat.dto';
-import { AIProvider } from 'src/ai/providers/ai-provider.interface';
 import {
   AIError,
-  AIUnsupportedProviderError,
-  AIPromptTooLargeError,
   AIInvalidModelError,
+  AIPromptTooLargeError,
+  AIUnsupportedProviderError,
 } from 'src/ai/errors/ai.error';
-import { ALLOWED_MODELS } from 'src/ai/models/allowed-models';
-import { ChatMessage } from '../dto/chat.dto';
 import { checkRateLimit } from 'src/ai/limits/rate-limits';
+import { ALLOWED_MODELS } from 'src/ai/models/allowed-models';
+import { AIProviderName } from 'src/ai/providers/enum/ai-provider.enum';
+import { AIProvider } from 'src/ai/providers/interface/ai-provider.interface';
+
+import { ChatMessage, ChatRequestDto } from '../dto/chat.dto';
 
 const MAX_CHARS = 4000;
 
 @Injectable()
 export class ChatService {
-  constructor(private readonly providers: Record<string, AIProvider>) {}
+  constructor(
+    private readonly providers: Partial<Record<AIProviderName, AIProvider>>,
+  ) {}
 
   async generateResponse(data: ChatRequestDto): Promise<string> {
     checkRateLimit('global');
@@ -38,7 +41,7 @@ export class ChatService {
     }
   }
 
-  private getProvider(provider: string): AIProvider {
+  private getProvider(provider: AIProviderName): AIProvider {
     const aiProvider = this.providers[provider];
 
     if (!aiProvider) {
@@ -50,7 +53,7 @@ export class ChatService {
     return aiProvider;
   }
 
-  private validateModel(provider: string, model: string): void {
+  private validateModel(provider: AIProviderName, model: string): void {
     const allowedModels = ALLOWED_MODELS[provider];
 
     if (!allowedModels || !allowedModels.includes(model)) {

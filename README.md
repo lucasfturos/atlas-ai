@@ -37,7 +37,8 @@ Essa separação permite que o projeto evolua facilmente para suportar:
 - Node.js
 - NestJS
 - TypeScript
-- Google Gemini SDK (@google/genai)
+- Google Gemini SDK
+- Llama API 
 
 ## Instalação
 
@@ -59,7 +60,8 @@ npm install
 Criar um arquivo .env na raiz do projeto com o seguinte conteúdo:
 
 ```
-GEMINI_API_KEY=your_api_key_here
+GEMINI_API_KEY=put_your_key_here
+LLAMA_API_KEY=put_your_key_here
 PORT=3000
 ```
 
@@ -126,6 +128,7 @@ Esse endpoint:
 Atualmente:
 
 - Google Gemini
+- Meta Llama
 
 Planejado:
 

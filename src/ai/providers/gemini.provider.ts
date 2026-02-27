@@ -1,7 +1,8 @@
 import { GoogleGenAI } from '@google/genai';
-import { AIProvider } from './ai-provider.interface';
 import { ChatMessage } from 'src/chat/dto/chat.dto';
+
 import { AIConfigError, AIError, AIProviderError } from '../errors/ai.error';
+import { AIProvider } from './interface/ai-provider.interface';
 
 export class GeminiProvider implements AIProvider {
   private client: GoogleGenAI;

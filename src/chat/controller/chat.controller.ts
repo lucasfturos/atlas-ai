@@ -2,21 +2,26 @@ import {
   Body,
   Controller,
   Get,
+  HttpStatus,
   Post,
   Query,
   Res,
-  HttpStatus,
 } from '@nestjs/common';
-import type { Response } from 'express';
-import { ChatService } from '../service/chat.service';
-import { ChatRequestDto } from '../dto/chat.dto';
 import {
   AIConfigError,
-  AIProviderError,
-  AIUnsupportedProviderError,
   AIInvalidModelError,
   AIPromptTooLargeError,
+  AIProviderError,
+  AIUnsupportedProviderError,
 } from 'src/ai/errors/ai.error';
+import { AIProviderName } from 'src/ai/providers/enum/ai-provider.enum';
+
+import { ChatRequestDto } from '../dto/chat.dto';
+import { ChatService } from '../service/chat.service';
+import { renderError, renderResult, renderTestForm } from './chat-test.view';
+
+import type { Response } from 'express';
+import { DEFAULT_MODELS } from 'src/ai/models/allowed-models';
 
 @Controller('v1/chat')
 export class ChatController {
@@ -41,21 +46,31 @@ export class ChatController {
   }
 
   @Get('test')
-  async test(@Query('q') q: string, @Res() res: Response) {
+  async test(
+    @Query('q') q: string,
+    @Res() res: Response,
+    @Query('provider') provider: AIProviderName = AIProviderName.GEMINI,
+    @Query('model') model?: string,
+  ) {
     if (!q) {
-      return this.renderTestForm(res);
+      return res.send(
+        renderTestForm({
+          provider,
+          model: DEFAULT_MODELS[provider],
+        }),
+      );
     }
 
     try {
       const output = await this.chatService.generateResponse({
-        provider: 'gemini',
-        model: 'gemini-3-flash-preview',
+        provider: provider,
+        model: model ?? DEFAULT_MODELS[provider],
         messages: [{ role: 'user', content: q }],
       });
 
-      return res.send(this.renderResult(output));
+      return res.send(renderResult(output));
     } catch (err) {
-      return res.send(this.renderError(err));
+      return res.send(renderError(err));
     }
   }
 
@@ -87,43 +102,5 @@ export class ChatController {
     return res
       .status(HttpStatus.INTERNAL_SERVER_ERROR)
       .json({ error: 'Internal error' });
-  }
-
-  private renderTestForm(res: Response) {
-    return res.send(`
-      <html>
-        <body>
-          <h2>Atlas AI - Teste</h2>
-          <form method="get">
-            <input name="q" style="width:300px" placeholder="Digite sua pergunta" />
-            <button type="submit">Enviar</button>
-          </form>
-        </body>
-      </html>
-    `);
-  }
-
-  private renderResult(output: string) {
-    return `
-      <html>
-        <body>
-          <h2>Atlas AI - Resposta</h2>
-          <pre>${output}</pre>
-        </body>
-      </html>
-    `;
-  }
-
-  private renderError(err: unknown) {
-    const message = err instanceof Error ? err.message : 'Unknown error';
-
-    return `
-      <html>
-        <body>
-          <h2>Atlas AI - Erro</h2>
-          <pre>${message}</pre>
-        </body>
-      </html>
-    `;
   }
 }
