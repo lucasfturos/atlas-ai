@@ -1,6 +1,6 @@
 # Atlas AI
 
-Atlas AI é uma API backend em NestJS que fornece uma camada unificada para integração com diferentes provedores de Inteligência Artificial por meio de uma interface comum..
+Atlas AI é uma API backend em NestJS que fornece uma camada unificada para integração com diferentes provedores de Inteligência Artificial por meio de uma interface comum.
 
 O projeto abstrai detalhes específicos de cada provider (como Gemini, OpenAI, etc.), permitindo que aplicações consumam IA por meio de uma interface consistente, extensível e fácil de manter.
 
