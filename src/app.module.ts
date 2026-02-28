@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ChatModule } from './chat/module/chat.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+
+import { ChatModule } from './chat/module/chat.module';
 
 @Module({
   imports: [

@@ -1,9 +1,10 @@
-import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
+import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import type { Server } from 'http';
+
 import { AppModule } from '../src/app.module';
 
+import type { Server } from 'http';
 jest.mock('../src/ai/providers/gemini.provider', () => {
   return {
     GeminiProvider: jest.fn().mockImplementation(() => ({

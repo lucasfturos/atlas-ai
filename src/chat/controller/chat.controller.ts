@@ -14,6 +14,7 @@ import {
   AIProviderError,
   AIUnsupportedProviderError,
 } from 'src/ai/errors/ai.error';
+import { DEFAULT_MODELS } from 'src/ai/models/allowed-models';
 import { AIProviderName } from 'src/ai/providers/enum/ai-provider.enum';
 
 import { ChatRequestDto } from '../dto/chat.dto';
@@ -21,8 +22,6 @@ import { ChatService } from '../service/chat.service';
 import { renderError, renderResult, renderTestForm } from './chat-test.view';
 
 import type { Response } from 'express';
-import { DEFAULT_MODELS } from 'src/ai/models/allowed-models';
-
 @Controller('v1/chat')
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
