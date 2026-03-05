@@ -6,8 +6,10 @@ import { LlamaProvider } from 'src/ai/providers/llama.provider';
 
 import { ChatController } from '../controller/chat.controller';
 import { ChatService } from '../service/chat.service';
+import { AuthModule } from 'src/auth/module/auth.module';
 
 @Module({
+  imports: [AuthModule],
   controllers: [ChatController],
   providers: [
     {

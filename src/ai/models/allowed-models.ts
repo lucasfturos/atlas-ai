@@ -1,5 +1,5 @@
-import { GeminiModel, LlamaModel } from '../providers/enum/ai-model.enum';
-import { AIProviderName } from '../providers/enum/ai-provider.enum';
+import { GeminiModel, LlamaModel } from 'src/ai/providers/enum/ai-model.enum';
+import { AIProviderName } from 'src/ai/providers/enum/ai-provider.enum';
 
 export const ALLOWED_MODELS: Record<AIProviderName, readonly string[]> = {
   [AIProviderName.GEMINI]: Object.values(GeminiModel),

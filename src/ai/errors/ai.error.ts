@@ -10,6 +10,12 @@ export class AIInvalidModelError extends AIError {
   }
 }
 
+export class AIGlobalLimitError extends Error {
+  constructor() {
+    super('Global chat limit reached. API is locked.');
+  }
+}
+
 export class AIConfigError extends AIError {}
 export class AIProviderError extends AIError {}
 export class AIPromptTooLargeError extends AIError {}

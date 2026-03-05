@@ -5,30 +5,70 @@ import {
   HttpStatus,
   Post,
   Query,
+  Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import {
   AIConfigError,
+  AIGlobalLimitError,
   AIInvalidModelError,
   AIPromptTooLargeError,
   AIProviderError,
   AIUnsupportedProviderError,
 } from 'src/ai/errors/ai.error';
+import {
+  checkGlobalChatLimit,
+  unlockGlobalChatLimit,
+} from 'src/ai/limits/global-chat-limits';
 import { DEFAULT_MODELS } from 'src/ai/models/allowed-models';
 import { AIProviderName } from 'src/ai/providers/enum/ai-provider.enum';
+import { JwtOptionalGuard } from 'src/auth/guard/jwt-optional.guard';
+import { AuthService } from 'src/auth/service/auth.service';
+import { extractPasswordFromPrompt } from 'src/auth/utils/extract-password';
+import { ChatRequestDto } from 'src/chat/dto/chat.dto';
+import { ChatService } from 'src/chat/service/chat.service';
 
-import { ChatRequestDto } from '../dto/chat.dto';
-import { ChatService } from '../service/chat.service';
 import { renderError, renderResult, renderTestForm } from './chat-test.view';
 
-import type { Response } from 'express';
+import type { Response, Request } from 'express';
 @Controller('v1/chat')
+@UseGuards(JwtOptionalGuard)
 export class ChatController {
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly chatService: ChatService,
+    private readonly authService: AuthService,
+  ) {}
 
   @Post()
-  async chat(@Body() body: ChatRequestDto, @Res() res: Response) {
+  async chat(
+    @Body() body: ChatRequestDto,
+    @Req() req: Request & { isAdmin?: boolean },
+    @Res() res: Response,
+  ) {
     try {
+      console.log(JSON.stringify(body.messages, null, 2));
+
+      const messages = body.messages ?? [];
+
+      for (const message of messages) {
+        if (!message?.content) continue;
+
+        const { password, prompt } = extractPasswordFromPrompt(message.content);
+
+        if (password && this.authService.validatePassword(password)) {
+          unlockGlobalChatLimit();
+          req.isAdmin = true;
+        }
+
+        message.content = prompt;
+      }
+
+      if (!req.isAdmin) {
+        const limit = Number(process.env.GLOBAL_CHAT_LIMIT ?? 5);
+        checkGlobalChatLimit(limit);
+      }
+
       const output = await this.chatService.generateResponse(body);
 
       return res.status(HttpStatus.OK).json({
@@ -61,10 +101,24 @@ export class ChatController {
     }
 
     try {
+      const { password, prompt } = extractPasswordFromPrompt(q);
+
+      let isAdmin = false;
+
+      if (password && this.authService.validatePassword(password)) {
+        unlockGlobalChatLimit();
+        isAdmin = true;
+      }
+
+      if (!isAdmin) {
+        const limit = Number(process.env.GLOBAL_CHAT_LIMIT ?? 5);
+        checkGlobalChatLimit(limit);
+      }
+
       const output = await this.chatService.generateResponse({
         provider: provider,
         model: model ?? DEFAULT_MODELS[provider],
-        messages: [{ role: 'user', content: q }],
+        messages: [{ role: 'user', content: prompt }],
       });
 
       return res.send(renderResult(output));
@@ -96,6 +150,12 @@ export class ChatController {
 
     if (err instanceof AIProviderError) {
       return res.status(HttpStatus.BAD_GATEWAY).json({ error: err.message });
+    }
+
+    if (err instanceof AIGlobalLimitError) {
+      return res.status(HttpStatus.TOO_MANY_REQUESTS).json({
+        error: err.message,
+      });
     }
 
     return res

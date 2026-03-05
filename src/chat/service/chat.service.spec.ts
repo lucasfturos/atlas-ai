@@ -7,7 +7,7 @@ import { checkRateLimit } from 'src/ai/limits/rate-limits';
 import { AIProviderName } from 'src/ai/providers/enum/ai-provider.enum';
 import { AIProvider } from 'src/ai/providers/interface/ai-provider.interface';
 
-import { ChatRequestDto } from '../dto/chat.dto';
+import { ChatRequestDto } from 'src/chat/dto/chat.dto';
 import { ChatService } from './chat.service';
 
 jest.mock('src/ai/limits/rate-limits', () => ({
