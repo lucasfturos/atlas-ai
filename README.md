@@ -2,12 +2,12 @@
 
 Atlas AI é uma API backend em NestJS que fornece uma camada unificada para integração com diferentes provedores de Inteligência Artificial por meio de uma interface comum.
 
-O projeto abstrai detalhes específicos de cada provider (como Gemini, OpenAI, etc.), permitindo que aplicações consumam IA por meio de uma interface consistente, extensível e fácil de manter.
+O projeto abstrai detalhes específicos de cada provider (como Gemini, Llama, etc.), permitindo que aplicações consumam IA por meio de uma interface consistente, extensível e fácil de manter.
 
 ## Principais características
 
 - Arquitetura baseada em providers (Strategy Pattern)
-- Integração com Google Gemini via SDK oficial
+- Integração com Google Gemini via SDK da OpenAI
 - Estrutura preparada para múltiplos provedores de IA
 - Validação de entrada com DTOs
 - Limites de uso para evitar abuso de APIs gratuitas
@@ -37,8 +37,7 @@ Essa separação permite que o projeto evolua facilmente para suportar:
 - Node.js
 - NestJS
 - TypeScript
-- Google Gemini SDK
-- Llama API 
+- OpenAI SDK
 
 ## Instalação
 
@@ -57,13 +56,13 @@ npm install
 
 3. Configurar variáveis de ambiente
 
-Criar um arquivo .env na raiz do projeto com o seguinte conteúdo:
+Criar um arquivo .env na raiz:
 
 ```
-GEMINI_API_KEY=put_your_key_here
-LLAMA_API_KEY=put_your_key_here
-PORT=3000
+mv .env-example .env
 ```
+
+E alterar seu conteúdo para funcionar.
 
 ## Executar o projeto
 
@@ -129,12 +128,7 @@ Atualmente:
 
 - Google Gemini
 - Meta Llama
-
-Planejado:
-
-- OpenAI
-- Claude
-- Outros LLMs compatíveis e gratuitos
+- Hugging Face
 
 Adicionar um novo provider exige apenas:
 

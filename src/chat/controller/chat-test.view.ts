@@ -1,4 +1,4 @@
-import { DEFAULT_MODELS } from 'src/ai/models/allowed-models';
+import { ALLOWED_MODELS } from 'src/ai/models/allowed-models';
 import { AIProviderName } from 'src/ai/providers/enum/ai-provider.enum';
 
 type TestFormState = {
@@ -21,19 +21,15 @@ export function renderTestForm({ provider, model }: TestFormState) {
                 <option value="llama" ${provider === AIProviderName.LLAMA ? 'selected' : ''}>
                   Llama
                 </option>
+                <option value="huggingface" ${provider === AIProviderName.HUGGINGFACE ? 'selected' : ''}>
+                  HuggingFace
+                </option>
               </select>
             </div>
 
             <div style="margin-top:8px">
               <label>Model:</label>
-              <input
-                name="model"
-                id="model"
-                style="width:300px"
-                value="${model}"
-                placeholder="Model name"
-                disabled
-              />
+              <select name="model" id="model" style="width:300px"></select>
             </div>
 
             <div style="margin-top:8px">
@@ -51,16 +47,37 @@ export function renderTestForm({ provider, model }: TestFormState) {
           
           <script>
             const providerSelect = document.getElementById('provider');
-            const modelInput = document.getElementById('model');
+            const modelSelect = document.getElementById('model');
 
-            const DEFAULT_MODELS = {
-              gemini: '${DEFAULT_MODELS[AIProviderName.GEMINI]}',
-              llama: '${DEFAULT_MODELS[AIProviderName.LLAMA]}',
+            const MODELS = {
+              gemini: ${JSON.stringify(ALLOWED_MODELS[AIProviderName.GEMINI])},
+              llama: ${JSON.stringify(ALLOWED_MODELS[AIProviderName.LLAMA])},
+              huggingface: ${JSON.stringify(ALLOWED_MODELS[AIProviderName.HUGGINGFACE])}
             };
 
+            function populateModels(provider) {
+              const models = MODELS[provider] || [];
+
+              modelSelect.innerHTML = '';
+
+              for (const m of models) {
+                const option = document.createElement('option');
+                option.value = m;
+                option.textContent = m;
+
+                if (m === "${model}") {
+                  option.selected = true;
+                }
+
+                modelSelect.appendChild(option);
+              }
+            }
+
             providerSelect.addEventListener('change', () => {
-              modelInput.value = DEFAULT_MODELS[providerSelect.value];
+              populateModels(providerSelect.value);
             });
+
+            populateModels(providerSelect.value);
           </script>
         </body>
       </html>

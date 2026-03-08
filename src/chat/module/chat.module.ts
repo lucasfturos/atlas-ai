@@ -7,6 +7,7 @@ import { LlamaProvider } from 'src/ai/providers/llama.provider';
 import { ChatController } from '../controller/chat.controller';
 import { ChatService } from '../service/chat.service';
 import { AuthModule } from 'src/auth/module/auth.module';
+import { HuggingFaceProvider } from 'src/ai/providers/huggingface.provider';
 
 @Module({
   imports: [AuthModule],
@@ -17,6 +18,7 @@ import { AuthModule } from 'src/auth/module/auth.module';
       useFactory: (): Record<AIProviderName, AIProvider> => ({
         [AIProviderName.GEMINI]: new GeminiProvider(),
         [AIProviderName.LLAMA]: new LlamaProvider(),
+        [AIProviderName.HUGGINGFACE]: new HuggingFaceProvider(),
       }),
     },
     {
