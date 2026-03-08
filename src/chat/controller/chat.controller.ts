@@ -21,7 +21,7 @@ import {
   checkGlobalChatLimit,
   unlockGlobalChatLimit,
 } from 'src/ai/limits/global-chat-limits';
-import { DEFAULT_MODELS } from 'src/ai/models/allowed-models';
+import { ALLOWED_MODELS, DEFAULT_MODELS } from 'src/ai/models/allowed-models';
 import { AIProviderName } from 'src/ai/providers/enum/ai-provider.enum';
 import { JwtOptionalGuard } from 'src/auth/guard/jwt-optional.guard';
 import { AuthService } from 'src/auth/service/auth.service';
@@ -82,6 +82,31 @@ export class ChatController {
     } catch (err) {
       return this.handleApiError(err, res);
     }
+  }
+
+  @Get('models')
+  getModels(@Query('provider') provider?: AIProviderName) {
+    if (provider) {
+      const models = ALLOWED_MODELS[provider];
+
+      if (!models) {
+        throw new AIUnsupportedProviderError(provider);
+      }
+
+      return {
+        provider,
+        default: DEFAULT_MODELS[provider],
+        models,
+      };
+    }
+
+    return {
+      providers: Object.values(AIProviderName).map((p) => ({
+        provider: p,
+        default: DEFAULT_MODELS[p],
+        models: ALLOWED_MODELS[p],
+      })),
+    };
   }
 
   @Get('test')
