@@ -47,8 +47,6 @@ export class ChatController {
     @Res() res: Response,
   ) {
     try {
-      console.log(JSON.stringify(body.messages, null, 2));
-
       const messages = body.messages ?? [];
 
       for (const message of messages) {
